@@ -13,9 +13,9 @@ export default async function ToursPage() {
             Explore Our Tours
           </h1>
           <p className="text-lg text-neutral-700 max-w-2xl mx-auto">
-            Find the adventure that&apos;s perfect for you. Whether it&apos;s the vast
-            deserts, ancient cities, or stunning mountains — Jordan has it all.
-          </p>
+  Find the adventure that&apos;s perfect for you. Whether it&apos;s the vast
+  deserts, ancient cities, or stunning mountains — Jordan has it all.
+</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
