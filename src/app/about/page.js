@@ -8,7 +8,7 @@ export default function AboutPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">About Us</h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Jordan Adventure Tours is a locally owned company dedicated to
-            providing unforgettable experiences in Jordan's most beautiful
+            providing unforgettable experiences in Jordan&apos;s most beautiful
             landscapes.
           </p>
         </div>
@@ -37,13 +37,13 @@ export default function AboutPage() {
                 </p>
                 <p>
                   What started as a small operation with just two guides and a
-                  single 4x4 vehicle has grown into one of Jordan's most
+                  single 4x4 vehicle has grown into one of Jordan&apos;s most
                   respected adventure tour companies, with a team of over 30
                   expert guides and a fleet of modern vehicles.
                 </p>
                 <p>
-                  We're proud to have introduced thousands of visitors to
-                  Jordan's incredible landscapes while maintaining our commitment
+                  We&apos;re proud to have introduced thousands of visitors to
+                  Jordan&apos;s incredible landscapes while maintaining our commitment
                   to sustainable tourism practices and authentic cultural
                   experiences.
                 </p>

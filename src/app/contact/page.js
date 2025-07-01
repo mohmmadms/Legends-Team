@@ -32,7 +32,7 @@ export default function ContactPage() {
           Contact Us
         </h1>
         <p className="text-center text-lg text-neutral-700 mb-10">
-          Have questions? Reach out — we're always ready to help.
+          Have questions? Reach out — we&apos;re always ready to help.
         </p>
 
         <form

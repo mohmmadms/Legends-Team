@@ -13,7 +13,7 @@ export default async function ToursPage() {
             Explore Our Tours
           </h1>
           <p className="text-lg text-neutral-700 max-w-2xl mx-auto">
-            Find the adventure that’s perfect for you. Whether it's the vast
+            Find the adventure that&apos;s perfect for you. Whether it's the vast
             deserts, ancient cities, or stunning mountains — Jordan has it all.
           </p>
         </div>

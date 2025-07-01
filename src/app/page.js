@@ -37,7 +37,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
           <div className="text-center px-4 max-w-3xl">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-              Discover Jordan's Hidden Gems
+              Discover Jordan&apos;s Hidden Gems
             </h1>
             <p className="text-xl text-white mb-8">
               Unforgettable adventures in Jordan’s breathtaking landscapes.

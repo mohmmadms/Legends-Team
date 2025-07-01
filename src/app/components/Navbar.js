@@ -10,7 +10,7 @@ export default function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-4">
         <Link href="/" className="text-2xl font-bold text-[#D97706]">
-          Jordan Adventures
+          Legends Team
         </Link>
 
         <div className="hidden md:flex space-x-8">
