@@ -2,8 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [tours, setTours] = useState([]);
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/tours`
+        );
+        const data = await res.json();
+        setTours(data);
+      } catch (error) {
+        console.error("Failed to fetch tours:", error);
+      }
+    };
+
+    fetchTours();
+  }, []);
+
   return (
     <div className="bg-[#FDF6E3] text-[#065F46]">
       {/* Hero Section */}
@@ -45,78 +64,58 @@ export default function Home() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 text-[#065F46]">
-              Our Popular Adventures
-            </h2>
+            <h2 className="text-4xl font-bold mb-4">Our Popular Adventures</h2>
             <p className="text-lg text-neutral-700 max-w-2xl mx-auto">
               Carefully curated experiences showcasing Jordan’s natural beauty
               and culture.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                id: 1,
-                title: "Wadi Rum Desert Expedition",
-                description:
-                  "3-day camping under the stars with jeep tours and Bedouin experiences.",
-                price: "$350",
-                duration: "3 days",
-                image: "/images/wadi-rum.jpg",
-              },
-              {
-                id: 2,
-                title: "Petra & Dead Sea Combo",
-                description:
-                  "Explore the ancient city of Petra and float in the Dead Sea.",
-                price: "$450",
-                duration: "4 days",
-                image: "/images/petra.jpg",
-              },
-              {
-                id: 3,
-                title: "Dana Biosphere Reserve Trek",
-                description:
-                  "Multi-day hiking through Jordan’s most diverse nature reserve.",
-                price: "$300",
-                duration: "2 days",
-                image: "/images/dana.jpg",
-              },
-            ].map((tour) => (
-              <div
-                key={tour.id}
-                className="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition"
-              >
-                <div className="relative h-56">
-                  <Image
-                    src={tour.image}
-                    alt={tour.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-[#065F46]">
-                    {tour.title}
-                  </h3>
-                  <p className="text-neutral-700 mb-4">{tour.description}</p>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[#D97706] font-bold">
-                      {tour.price}
-                    </span>
-                    <span className="text-neutral-600">{tour.duration}</span>
+          {tours.length === 0 ? (
+            <div className="text-center text-neutral-500">
+              No tours available yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {tours.slice(0, 3).map((tour) => (
+                <div
+                  key={tour._id}
+                  className="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition"
+                >
+                  <div className="relative h-56">
+                    <Image
+                      src={tour.image}
+                      alt={tour.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                  <Link
-                    href={`/tours/${tour.id}`}
-                    className="block w-full text-center bg-[#D97706] hover:bg-[#b66205] text-white py-2 rounded-xl transition"
-                  >
-                    View Details
-                  </Link>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">
+                      {tour.title}
+                    </h3>
+                    <p className="text-neutral-700 mb-4">
+                      {tour.description}
+                    </p>
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-[#D97706] font-bold">
+                        {tour.price}
+                      </span>
+                      <span className="text-neutral-600">
+                        {tour.duration}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/tours/${tour._id}`}
+                      className="block w-full text-center bg-[#D97706] hover:bg-[#b66205] text-white py-2 rounded-xl transition"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link
@@ -133,9 +132,7 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 text-[#065F46]">
-              Why Travel With Us
-            </h2>
+            <h2 className="text-4xl font-bold mb-4">Why Travel With Us</h2>
             <p className="text-lg text-neutral-700 max-w-2xl mx-auto">
               We go above and beyond to make your Jordanian adventure
               unforgettable.
@@ -144,46 +141,20 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {
-                icon: "🏨",
-                title: "Comfortable Stay",
-                desc: "Partnered with the best local hotels and Bedouin camps.",
-              },
-              {
-                icon: "🍽️",
-                title: "Local Cuisine",
-                desc: "Savor authentic Jordanian meals made with love.",
-              },
-              {
-                icon: "🚐",
-                title: "Reliable Transport",
-                desc: "Modern air-conditioned vehicles with experienced drivers.",
-              },
-              {
-                icon: "🗺️",
-                title: "Expert Guides",
-                desc: "Knowledgeable locals who make every tour special.",
-              },
-              {
-                icon: "🔒",
-                title: "Safety First",
-                desc: "Our activities meet the highest safety standards.",
-              },
-              {
-                icon: "💯",
-                title: "Satisfaction Guarantee",
-                desc: "We’re committed to making your trip memorable.",
-              },
-            ].map((feature, i) => (
+              { icon: "🏨", title: "Comfortable Stay", desc: "Top hotels and Bedouin camps." },
+              { icon: "🍽️", title: "Local Cuisine", desc: "Authentic Jordanian meals." },
+              { icon: "🚐", title: "Reliable Transport", desc: "Modern AC vehicles & drivers." },
+              { icon: "🗺️", title: "Expert Guides", desc: "Knowledgeable local guides." },
+              { icon: "🔒", title: "Safety First", desc: "Highest safety standards." },
+              { icon: "💯", title: "Satisfaction", desc: "We guarantee a memorable trip." },
+            ].map((f, i) => (
               <div
                 key={i}
                 className="bg-[#FDF6E3] p-6 rounded-2xl text-center shadow hover:shadow-lg transition"
               >
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2 text-[#065F46]">
-                  {feature.title}
-                </h3>
-                <p className="text-neutral-700">{feature.desc}</p>
+                <div className="text-4xl mb-4">{f.icon}</div>
+                <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
+                <p className="text-neutral-700">{f.desc}</p>
               </div>
             ))}
           </div>
