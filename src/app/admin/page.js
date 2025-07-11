@@ -5,13 +5,19 @@ import {
   updateTour,
   deleteTour,
   getTours,
+  createGallery,
+  deleteGalleryImage,
+  getGallery,
 } from "../lib/api";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-export default function AdminTours() {
+export default function AdminPanel() {
   const [tours, setTours] = useState([]);
-  const [form, setForm] = useState({
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+
+  const [tourForm, setTourForm] = useState({
     title: "",
     description: "",
     price: "",
@@ -20,10 +26,15 @@ export default function AdminTours() {
     details: [""],
   });
 
-  const [editingId, setEditingId] = useState(null);
+  const [galleryForm, setGalleryForm] = useState({
+    title: "",
+    category: "",
+    url: "",
+  });
 
   useEffect(() => {
     fetchTours();
+    fetchGallery();
   }, []);
 
   const fetchTours = async () => {
@@ -31,44 +42,13 @@ export default function AdminTours() {
     setTours(data);
   };
 
-  const handleAddOrUpdate = async (e) => {
-    e.preventDefault();
-    if (editingId) {
-      await updateTour(editingId, form);
-    } else {
-      await createTour(form);
-    }
-    fetchTours();
-    resetForm();
+  const fetchGallery = async () => {
+    const data = await getGallery();
+    setGalleryImages(data);
   };
 
-  const handleEdit = (tour) => {
-    setForm({ ...tour });
-    setEditingId(tour._id);
-  };
-
-  const handleDelete = async (id) => {
-    await deleteTour(id);
-    fetchTours();
-  };
-
-  const handleDetailsChange = (index, value) => {
-    const updated = [...form.details];
-    updated[index] = value;
-    setForm({ ...form, details: updated });
-  };
-
-  const handleAddDetail = () => {
-    setForm({ ...form, details: [...form.details, ""] });
-  };
-
-  const handleRemoveDetail = (index) => {
-    const updated = form.details.filter((_, i) => i !== index);
-    setForm({ ...form, details: updated });
-  };
-
-  const resetForm = () => {
-    setForm({
+  const resetTourForm = () => {
+    setTourForm({
       title: "",
       description: "",
       price: "",
@@ -79,116 +59,137 @@ export default function AdminTours() {
     setEditingId(null);
   };
 
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleTourSubmit = async (e) => {
+    e.preventDefault();
+    editingId
+      ? await updateTour(editingId, tourForm)
+      : await createTour(tourForm);
+    fetchTours();
+    resetTourForm();
+  };
+
+  const handleGallerySubmit = async (e) => {
+    e.preventDefault();
+    if (!isValidUrl(galleryForm.url)) return alert("Invalid image URL");
+
+    try {
+      await createGallery(galleryForm);
+      setGalleryForm({ title: "", category: "", url: "" });
+      fetchGallery();
+    } catch {
+      alert("Failed to add image.");
+    }
+  };
+
+  const handleDeleteTour = async (id) => {
+    await deleteTour(id);
+    fetchTours();
+  };
+
+  const handleDeleteImage = async (id) => {
+    if (confirm("Delete this image?")) {
+      await deleteGalleryImage(id);
+      fetchGallery();
+    }
+  };
+
+  const handleDetailsChange = (i, value) => {
+    const updated = [...tourForm.details];
+    updated[i] = value;
+    setTourForm({ ...tourForm, details: updated });
+  };
+
+  const handleAddDetail = () => {
+    setTourForm({ ...tourForm, details: [...tourForm.details, ""] });
+  };
+
+  const handleRemoveDetail = (i) => {
+    setTourForm({
+      ...tourForm,
+      details: tourForm.details.filter((_, index) => index !== i),
+    });
+  };
+
   return (
-    <div className="bg-[#FDF6E3] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 py-20">
-        <h1 className="text-5xl font-bold mb-8 text-[#065F46]">
-          Manage Tours
+    <div className="bg-[#FDF6E3] min-h-screen py-16 px-4 md:px-10">
+      <div className="max-w-7xl mx-auto space-y-24">
+        <h1 className="text-5xl font-bold text-[#065F46] text-center">
+          Admin Panel
         </h1>
 
-        {/* Tour Form */}
+        {/* === Tour Form === */}
         <form
-          onSubmit={handleAddOrUpdate}
-          className="bg-white rounded-2xl shadow-xl p-8 mb-12 space-y-6"
+          onSubmit={handleTourSubmit}
+          className="bg-white rounded-2xl shadow-xl p-8 space-y-6"
         >
-          <h2 className="text-2xl font-semibold mb-4 text-[#065F46]">
+          <h2 className="text-2xl font-semibold text-[#065F46]">
             {editingId ? "Edit Tour" : "Add New Tour"}
           </h2>
 
-          {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  {/* Title */}
-  <div>
-    <label className="block text-[#065F46] font-semibold mb-1">
-      Title
-    </label>
-    <input
-      type="text"
-      required
-      value={form.title}
-      onChange={(e) => setForm({ ...form, title: e.target.value })}
-      placeholder="Tour title"
-      className="w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#D97706]"
-    />
-  </div>
-
-  {/* Price */}
-  <div>
-    <label className="block text-[#065F46] font-semibold mb-1">
-      Price
-    </label>
-    <input
-      type="text"
-      required
-      value={form.price}
-      onChange={(e) => setForm({ ...form, price: e.target.value })}
-      placeholder="$450"
-      className="w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#D97706]"
-    />
-  </div>
-
-  {/* Duration */}
-  <div>
-    <label className="block text-[#065F46] font-semibold mb-1">
-      Duration
-    </label>
-    <input
-      type="text"
-      required
-      value={form.duration}
-      onChange={(e) => setForm({ ...form, duration: e.target.value })}
-      placeholder="3 days"
-      className="w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#D97706]"
-    />
-  </div>
-
-  {/* Image URL */}
-  <div>
-    <label className="block text-[#065F46] font-semibold mb-1">
-      Image URL
-    </label>
-    <input
-      type="text"
-      required
-      value={form.image}
-      onChange={(e) => setForm({ ...form, image: e.target.value })}
-      placeholder="https://example.com/image.jpg"
-      className="w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#D97706]"
-    />
-  </div>
-</div>
-          <div>
-            <label className="block text-[#065F46] font-semibold mb-1">
-              Description
-            </label>
-            <textarea
-              rows={4}
+            <input
+              placeholder="Title"
               required
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#D97706]"
-            ></textarea>
+              value={tourForm.title}
+              onChange={(e) => setTourForm({ ...tourForm, title: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
+            <input
+              placeholder="Price"
+              required
+              value={tourForm.price}
+              onChange={(e) => setTourForm({ ...tourForm, price: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
+            <input
+              placeholder="Duration"
+              required
+              value={tourForm.duration}
+              onChange={(e) => setTourForm({ ...tourForm, duration: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
+            <input
+              placeholder="Image URL"
+              required
+              value={tourForm.image}
+              onChange={(e) => setTourForm({ ...tourForm, image: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
           </div>
 
-          {/* Tour Details */}
+          <textarea
+            placeholder="Description"
+            rows={4}
+            required
+            value={tourForm.description}
+            onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })}
+            className="w-full border p-3 rounded-lg"
+          />
+
           <div>
-            <label className="block text-[#065F46] font-semibold mb-2">
-              Details (bullet points)
-            </label>
-            {form.details.map((detail, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+            <label className="text-[#065F46] font-medium">Details</label>
+            {tourForm.details.map((d, i) => (
+              <div key={i} className="flex gap-2 my-2">
                 <input
-                  type="text"
-                  value={detail}
-                  onChange={(e) => handleDetailsChange(index, e.target.value)}
-                  className="flex-1 border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#D97706]"
+                  value={d}
+                  onChange={(e) => handleDetailsChange(i, e.target.value)}
+                  className="flex-1 border p-2 rounded-lg"
                 />
                 <button
                   type="button"
-                  onClick={() => handleRemoveDetail(index)}
+                  onClick={() => handleRemoveDetail(i)}
                   className="text-red-500 hover:text-red-700"
                 >
-                  ✖️
+                  ✖
                 </button>
               </div>
             ))}
@@ -209,52 +210,56 @@ export default function AdminTours() {
           </button>
         </form>
 
-        {/* Tours Table */}
+        {/* === Tour Table === */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-[#065F46]">
+          <h2 className="text-2xl font-semibold text-[#065F46] mb-6">
             Current Tours
           </h2>
-
           <div className="overflow-x-auto">
-            <table className="w-full table-auto border border-neutral-200">
+            <table className="w-full table-auto text-left border border-neutral-200">
               <thead className="bg-[#D97706] text-white">
                 <tr>
-                  <th className="px-4 py-3 text-left">Image</th>
-                  <th className="px-4 py-3 text-left">Title</th>
-                  <th className="px-4 py-3 text-left">Price</th>
-                  <th className="px-4 py-3 text-left">Duration</th>
-                  <th className="px-4 py-3 text-left">Actions</th>
+                  <th className="p-3">Image</th>
+                  <th className="p-3">Title</th>
+                  <th className="p-3">Price</th>
+                  <th className="p-3">Duration</th>
+                  <th className="p-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {tours.map((tour) => (
-                  <tr
-                    key={tour._id}
-                    className="border-b border-neutral-200 hover:bg-[#FDF6E3]"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="relative w-20 h-14">
+                  <tr key={tour._id} className="border-b">
+                    <td className="p-3">
+                      {isValidUrl(tour.image) ? (
                         <Image
                           src={tour.image}
                           alt={tour.title}
-                          fill
-                          className="object-cover rounded"
+                          width={100}
+                          height={60}
+                          className="rounded object-cover"
                         />
-                      </div>
+                      ) : (
+                        <div className="w-24 h-16 bg-gray-200 text-gray-500 flex items-center justify-center text-xs">
+                          Invalid
+                        </div>
+                      )}
                     </td>
-                    <td className="px-4 py-3">{tour.title}</td>
-                    <td className="px-4 py-3">{tour.price}</td>
-                    <td className="px-4 py-3">{tour.duration}</td>
-                    <td className="px-4 py-3 space-x-2">
+                    <td className="p-3">{tour.title}</td>
+                    <td className="p-3">{tour.price}</td>
+                    <td className="p-3">{tour.duration}</td>
+                    <td className="p-3 space-x-2">
                       <button
-                        onClick={() => handleEdit(tour)}
-                        className="bg-[#065F46] hover:bg-[#054d3a] text-white px-4 py-2 rounded-lg"
+                        onClick={() => {
+                          setTourForm(tour);
+                          setEditingId(tour._id);
+                        }}
+                        className="bg-[#065F46] hover:bg-[#044c37] text-white px-4 py-2 rounded-lg transition"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(tour._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                        onClick={() => handleDeleteTour(tour._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
                       >
                         Delete
                       </button>
@@ -265,6 +270,99 @@ export default function AdminTours() {
                   <tr>
                     <td colSpan={5} className="text-center py-6">
                       No tours available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* === Gallery Form === */}
+        <form
+          onSubmit={handleGallerySubmit}
+          className="bg-white rounded-2xl shadow-xl p-8 space-y-6"
+        >
+          <h2 className="text-2xl font-semibold text-[#065F46]">
+            Add Gallery Image
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input
+              placeholder="Title"
+              required
+              value={galleryForm.title}
+              onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
+            <input
+              placeholder="Category"
+              value={galleryForm.category}
+              onChange={(e) => setGalleryForm({ ...galleryForm, category: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
+            <input
+              placeholder="Image URL"
+              required
+              value={galleryForm.url}
+              onChange={(e) => setGalleryForm({ ...galleryForm, url: e.target.value })}
+              className="border p-3 rounded-lg"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl transition"
+          >
+            Add Image
+          </button>
+        </form>
+
+        {/* === Gallery Table === */}
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-semibold text-[#065F46] mb-6">
+            Gallery Images
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto text-left border border-neutral-200">
+              <thead className="bg-[#D97706] text-white">
+                <tr>
+                  <th className="p-3">Image</th>
+                  <th className="p-3">Title</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {galleryImages.map((img) => (
+                  <tr key={img._id} className="border-b">
+                    <td className="p-3">
+                      {isValidUrl(img.url) ? (
+                        <img
+                          src={img.url}
+                          alt={img.title}
+                          className="w-24 h-16 object-cover rounded"
+                        />
+                      ) : (
+                        <div className="w-24 h-16 bg-gray-200 text-gray-500 flex items-center justify-center text-xs">
+                          Invalid
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3">{img.title}</td>
+                    <td className="p-3">{img.category || "-"}</td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => handleDeleteImage(img._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {galleryImages.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="text-center py-4">
+                      No images yet
                     </td>
                   </tr>
                 )}

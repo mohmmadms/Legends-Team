@@ -1,9 +1,12 @@
+
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bookingRoutes = require("./routes/booking");
 const contactRoutes = require("./routes/contact");
-require("dotenv").config();
+const galleryRoutes = require("./routes/gallery");
+
 
 const tourRoutes = require("./routes/tour");
 
@@ -16,12 +19,13 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("Jordan Adventures API is Running ✅");
+  res.send("Jordan Adventures API is Running");
 });
 
 app.use("/api/tours", tourRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/gallery", galleryRoutes);
 
 
 // MongoDB Connect

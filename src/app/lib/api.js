@@ -62,3 +62,26 @@ export async function sendMessage(data) {
   if (!res.ok) throw new Error("Failed to send message");
   return res.json();
 }
+export async function getGallery() {
+  const res = await fetch(`${API_URL}/gallery`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch gallery");
+  return res.json();
+}
+
+export async function createGallery(data) {
+  const res = await fetch(`${API_URL}/gallery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) throw new Error("Failed to add image to gallery");
+  return res.json();
+}
+export async function deleteGalleryImage(id) {
+  const res = await fetch(`${API_URL}/gallery/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete gallery image");
+  return res.json();
+}

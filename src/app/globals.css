@@ -1,2 +1,18 @@
 @import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/pagination";
+@import "swiper/css/navigation";
+
+.btn-primary {
+  @apply px-6 py-3 bg-[#D97706] text-white font-semibold rounded-xl transition hover:bg-[#b66205] shadow;
+}
+.btn-outline, .btn-outline-white {
+  @apply px-6 py-3 border-2 rounded-xl font-semibold transition;
+}
+.btn-outline {
+  @apply border-white text-white hover:bg-white hover:text-[#D97706];
+}
+.btn-outline-white {
+  @apply border-white text-white hover:bg-white hover:text-[#D97706];
+}
 
