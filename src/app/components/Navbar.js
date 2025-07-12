@@ -39,12 +39,6 @@ export default function Navbar() {
           >
             Gallery
           </Link>
-          <Link
-            href="/admin"
-            className="bg-[#D97706] hover:bg-[#b66205] text-white px-4 py-2 rounded-lg"
-          >
-            Admin
-          </Link>
         </div>
 
         {/* Mobile Menu */}
@@ -94,13 +88,6 @@ export default function Navbar() {
             onClick={() => setIsOpen(false)}
           >
             Gallery
-          </Link>
-          <Link
-            href="/admin"
-            className="block bg-[#D97706] hover:bg-[#b66205] text-white px-4 py-2 rounded-lg"
-            onClick={() => setIsOpen(false)}
-          >
-            Admin
           </Link>
         </div>
       )}
